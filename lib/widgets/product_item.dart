@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:project_4/models/product.dart';
+import 'package:project_4/screens/product_details.dart';
 
 class ProductItem extends StatelessWidget {
   final Product product;
@@ -7,6 +8,12 @@ class ProductItem extends StatelessWidget {
     super.key,
     required this.product
   });
+
+  void handleProductTap(BuildContext context, Product product) {
+    Navigator.of(context).push(MaterialPageRoute(
+      builder: (ctx) => ProductDetailsScreen(product: product)
+    ));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,10 +49,13 @@ class ProductItem extends StatelessWidget {
             onPressed: () {},
           ),
         ),
-        child: Image.network(
-          product.imageUrl,
-          fit: BoxFit.cover,
-        ),
+        child: GestureDetector(
+          onTap: () => handleProductTap(context, product),
+          child: Image.network(
+            product.imageUrl,
+            fit: BoxFit.cover,
+          ),
+        )
       )
     );
   }

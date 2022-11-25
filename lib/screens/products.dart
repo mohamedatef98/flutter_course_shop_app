@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:project_4/models/filters.dart';
 import 'package:project_4/provided-models/cart.dart';
+import 'package:project_4/screens/cart.dart';
 import 'package:project_4/widgets/badge.dart';
 import 'package:project_4/widgets/products-grid.dart';
 import 'package:provider/provider.dart';
@@ -20,6 +21,10 @@ class ProductsScreenState extends State<ProductsScreen> {
     setState(() {
       filter = filterValue;
     });
+  }
+
+  void handleCartIconOnPress(BuildContext context) {
+    Navigator.of(context).pushNamed(CartScreen.routeName);
   }
 
   @override
@@ -49,9 +54,7 @@ class ProductsScreenState extends State<ProductsScreen> {
             ),
             child: IconButton(
               icon: const Icon(Icons.shopping_cart),
-              onPressed: () {
-
-              },
+              onPressed: () => handleCartIconOnPress(context),
             ),
           )
         ],

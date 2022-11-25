@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:project_4/models/filters.dart';
+import 'package:project_4/provided-models/cart.dart';
+import 'package:project_4/widgets/badge.dart';
 import 'package:project_4/widgets/products-grid.dart';
+import 'package:provider/provider.dart';
 
 
 class ProductsScreen extends StatefulWidget {
@@ -38,6 +41,18 @@ class ProductsScreenState extends State<ProductsScreen> {
                 child: Text('Show All'),
               )
             ],
+          ),
+          Consumer<CartModel>(
+            builder: (context, cartModel, child) => Badge(
+              value: cartModel.itemCount.toString(),
+              child: child!,
+            ),
+            child: IconButton(
+              icon: const Icon(Icons.shopping_cart),
+              onPressed: () {
+
+              },
+            ),
           )
         ],
       ),

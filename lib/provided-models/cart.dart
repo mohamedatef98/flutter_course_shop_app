@@ -11,7 +11,7 @@ class CartModel extends ChangeNotifier {
 
   List<CartItem> get products => [..._cartItems.values];
 
-  get totalAmount => _cartItems.values.fold(0.0, (previousValue, cartItem) => previousValue + (cartItem.quantity * cartItem.price));
+  double get totalAmount => _cartItems.values.fold(0.0, (previousValue, cartItem) => previousValue + (cartItem.quantity * cartItem.price));
 
   void addItem(Product product) {
     if (_cartItems.containsKey(product.id)) {

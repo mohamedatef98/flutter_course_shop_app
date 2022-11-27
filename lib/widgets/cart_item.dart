@@ -35,6 +35,22 @@ class CartItem extends StatelessWidget {
           ),
         ),
         direction: DismissDirection.endToStart,
+        confirmDismiss: (direction) => showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Are you sure?'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('No')
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: const Text('Yes')
+              )
+            ],
+          )
+        ),
         onDismissed: (direction) => onCartItemRemove(cartItem),
         child: Padding(
           padding: const EdgeInsets.all(8),

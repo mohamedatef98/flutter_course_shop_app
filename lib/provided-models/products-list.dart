@@ -36,7 +36,7 @@ class ProductsListModel extends ChangeNotifier {
     ),
   ];
 
-  get allItems => [..._items];
+  List<Product> get allItems => [..._items];
 
   get favoriteItems => [..._items.where((item) => item.isFavorite == true)];
 

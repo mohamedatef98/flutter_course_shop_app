@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:project_4/provided-models/cart.dart';
+import 'package:project_4/provided-models/orders.dart';
+import 'package:project_4/widgets/app_drawer.dart';
 import 'package:project_4/widgets/cart_item.dart';
 import 'package:provider/provider.dart';
 
@@ -10,11 +12,13 @@ class CartScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cartModel = Provider.of<CartModel>(context);
+    final ordersModel = Provider.of<OrdersModel>(context, listen: false);
     final products = cartModel.products;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Cart'),
       ),
+      drawer: const AppDrawer(),
       body: Column(
         children: [
           Card(
@@ -38,7 +42,10 @@ class CartScreen extends StatelessWidget {
                     ),
                   ),
                   TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      ordersModel.addOrder(cartModel.products, cartModel.totalAmount);
+                      cartModel.clear();
+                    },
                     style: ButtonStyle(
                       foregroundColor: MaterialStateProperty.all(Theme.of(context).primaryColor),
                     ),

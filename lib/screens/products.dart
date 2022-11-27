@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:project_4/models/filters.dart';
 import 'package:project_4/provided-models/cart.dart';
 import 'package:project_4/screens/cart.dart';
+import 'package:project_4/widgets/app_drawer.dart';
 import 'package:project_4/widgets/badge.dart';
 import 'package:project_4/widgets/products-grid.dart';
 import 'package:provider/provider.dart';
@@ -59,6 +60,7 @@ class ProductsScreenState extends State<ProductsScreen> {
           )
         ],
       ),
+      drawer: const AppDrawer(),
       body: ProductGrid(
         filter: filter,
       ),

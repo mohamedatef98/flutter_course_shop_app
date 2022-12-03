@@ -40,8 +40,46 @@ class ProductsListModel extends ChangeNotifier {
 
   get favoriteItems => [..._items.where((item) => item.isFavorite == true)];
 
-  void addProduct(Product product) {
-    _items.add(product);
+  void addProductFromProductForm(Map<String, String> productFields) {
+    assert(productFields['title'] != null);
+    assert(productFields['description'] != null);
+    assert(productFields['price'] != null);
+    assert(productFields['imageUrl'] != null);
+
+    _items.add(Product(
+      id: DateTime.now().toString(),
+      title: productFields['title']!,
+      description: productFields['description']!,
+      price: double.parse(productFields['price']!),
+      imageUrl: productFields['imageUrl']!
+    ));
+    notifyListeners();
+  }
+
+  void editProductFromProductForm(String productId, Map<String, String> productFields) {
+    assert(productFields['title'] != null);
+    assert(productFields['description'] != null);
+    assert(productFields['price'] != null);
+    assert(productFields['imageUrl'] != null);
+
+    final productIndex = _items.indexWhere((product) => product.id == productId);
+    assert(productIndex != -1);
+
+    final oldProduct = _items[productIndex];
+    oldProduct.dispose();
+    _items[productIndex] = Product(
+      id: DateTime.now().toString(),
+      title: productFields['title']!,
+      description: productFields['description']!,
+      price: double.parse(productFields['price']!),
+      imageUrl: productFields['imageUrl']!,
+      isFavorite: oldProduct.isFavorite
+    );
+    notifyListeners();
+  }
+  
+  void removeProduct(String productId) {
+    _items.removeWhere((product) => product.id == productId);
     notifyListeners();
   }
 }

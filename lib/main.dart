@@ -4,6 +4,7 @@ import 'package:project_4/provided-models/orders.dart';
 import 'package:project_4/provided-models/products-list.dart';
 import 'package:project_4/screens/cart.dart';
 import 'package:project_4/screens/orders.dart';
+import 'package:project_4/screens/product_form.dart';
 import 'package:project_4/screens/products.dart';
 import 'package:project_4/screens/user_products.dart';
 import 'package:provider/provider.dart';
@@ -35,6 +36,7 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.purple,
           colorScheme: Theme.of(context).colorScheme.copyWith(
+            primary: Colors.purple,
             secondary: Colors.deepOrange
           ),
           fontFamily: 'Lato',
@@ -46,7 +48,7 @@ class MyApp extends StatelessWidget {
         routes: {
           CartScreen.routeName: (context) => const CartScreen(),
           OrdersScreen.routeName: (context) => const OrdersScreen(),
-          UserProductsScreen.routeName:(context) => const UserProductsScreen()
+          UserProductsScreen.routeName: (context) => const UserProductsScreen(),
         },
       ),
     );

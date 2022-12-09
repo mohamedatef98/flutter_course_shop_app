@@ -31,7 +31,7 @@ class UserProductItem extends StatelessWidget {
                     Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) => ProductFormScreen(
                         onProductSave: (productFields) {
-                          Provider.of<ProductsListModel>(context, listen: false).editProductFromProductForm(product.id, productFields);
+                          return Provider.of<ProductsListModel>(context, listen: false).editProductFromProductForm(product.id, productFields);
                         },
                         product: product,
                       )
@@ -62,7 +62,10 @@ class UserProductItem extends StatelessWidget {
                     ).then((value) {
                       assert(value != null);
                       if(value == true) {
-                        Provider.of<ProductsListModel>(context, listen: false).removeProduct(product.id);
+                        Provider.of<ProductsListModel>(context, listen: false).removeProduct(product.id)
+                          .catchError((_) => ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text("Error while deleting product"))
+                          ));
                       }
                     });
                   },

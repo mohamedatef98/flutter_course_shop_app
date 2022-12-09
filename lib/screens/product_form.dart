@@ -7,7 +7,7 @@ import 'package:project_4/provided-models/product.dart';
 
 class ProductFormScreen extends StatefulWidget {
   static const routeName = '/product-form';
-  final void Function(Map<String, String>) onProductSave;
+  final Future<void> Function(Map<String, String>) onProductSave;
   final Product? product;
   const ProductFormScreen({
     super.key,
@@ -26,6 +26,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
   final imageUrlController = TextEditingController();
 
   final productFormKey = GlobalKey<FormState>();
+  bool isLoading = false;
 
   String imageUrl = '';
 
@@ -73,11 +74,30 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
     imageUrlController.dispose();
   }
 
-  void handleSave() {
+  Future<void> handleSave() async {
     if(productFormKey.currentState!.validate()) {
       productFormKey.currentState!.save();
-      widget.onProductSave(productFields);
-      Navigator.of(context).pop();
+      setState(() {
+        isLoading = true;
+      });
+      try {
+        await widget.onProductSave(productFields)
+          .then((value) => Navigator.of(context).pop());
+      }
+      catch(error) {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('An Error!'),
+            content: Text(error.toString()),
+          )
+        );
+      }
+      finally {
+        setState(() {
+          isLoading = false;
+        });
+      }
     }
   }
 
@@ -93,7 +113,9 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
           )
         ],
       ),
-      body: Padding(
+      body: isLoading ?
+        const Center(child: CircularProgressIndicator(),) :
+        Padding(
         padding: const EdgeInsets.all(16),
         child: Form(
           key: productFormKey,

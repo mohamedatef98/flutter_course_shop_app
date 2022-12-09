@@ -10,4 +10,22 @@ class CartItem {
     required this.quantity,
     required this.price,
   });
+
+  Map<String, dynamic> getCartItemMap() {
+    return {
+      'id': id,
+      'title': title,
+      'quantity': quantity,
+      'price': price
+    };
+  }
+
+  static CartItem createCartItemFromMap(Map<String, dynamic> cartItemMap) {
+    return CartItem(
+      id: cartItemMap['id'],
+      title: cartItemMap['title'],
+      quantity: cartItemMap['quantity'],
+      price: cartItemMap['price']
+    );
+  }
 }

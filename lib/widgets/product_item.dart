@@ -40,7 +40,10 @@ class ProductItem extends StatelessWidget {
               leading: IconButton(
                 icon: Icon(product.isFavorite ? Icons.favorite : Icons.favorite_border),
                 color: Theme.of(context).colorScheme.secondary,
-                onPressed: product.toggleFavorite,
+                onPressed: () {
+                  product.toggleFavorite()
+                    .catchError((_) => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Error while setting favorite'))));
+                },
               ),
               title: Text(
                 '\$${product.price.toStringAsFixed(2)}',

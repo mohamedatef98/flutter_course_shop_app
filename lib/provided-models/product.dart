@@ -1,4 +1,6 @@
 import 'package:flutter/cupertino.dart';
+import 'package:project_4/helpers/env.dart';
+import '../helpers/http.dart' as http;
 
 class Product extends ChangeNotifier {
   final String id;
@@ -17,8 +19,18 @@ class Product extends ChangeNotifier {
     this.isFavorite = false
   });
 
-  void toggleFavorite() {
+  Future<void> toggleFavorite() {
     isFavorite = !isFavorite;
     notifyListeners();
+    return http.patch(
+      getProductUri(id),
+      {
+        'isFavorite': isFavorite
+      }
+    ).catchError((error) {
+      isFavorite = !isFavorite;
+      notifyListeners();
+      throw error;
+    });
   }
 }

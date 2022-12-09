@@ -24,7 +24,7 @@ class UserProductsScreen extends StatelessWidget {
               Navigator.of(context).push(MaterialPageRoute(
                 builder: (context) => ProductFormScreen(
                   onProductSave: (productFields) {
-                    Provider.of<ProductsListModel>(context, listen: false).addProductFromProductForm(productFields);
+                    return productsModel.addProductFromProductForm(productFields);
                   },
                 )
               ));
@@ -34,15 +34,18 @@ class UserProductsScreen extends StatelessWidget {
         ],
       ),
       drawer: const AppDrawer(),
-      body: Padding(
-        padding: const EdgeInsets.all(8),
-        child: ListView.builder(
-          itemCount: products.length,
-          itemBuilder: (ctx, index) => UserProductItem(
-            product: products[index]
-          )
-        ),
+      body: RefreshIndicator(
+        onRefresh: productsModel.loadProducts,
+        child: Padding(
+          padding: const EdgeInsets.all(8),
+          child: ListView.builder(
+            itemCount: products.length,
+            itemBuilder: (ctx, index) => UserProductItem(
+              product: products[index]
+            )
+          ),
       ),
+      )
     );
   }
 }

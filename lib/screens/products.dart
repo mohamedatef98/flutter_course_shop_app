@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:project_4/models/filters.dart';
 import 'package:project_4/provided-models/cart.dart';
+import 'package:project_4/provided-models/products-list.dart';
 import 'package:project_4/screens/cart.dart';
 import 'package:project_4/widgets/app_drawer.dart';
 import 'package:project_4/widgets/badge.dart';
@@ -30,6 +31,7 @@ class ProductsScreenState extends State<ProductsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final productsListModel = Provider.of<ProductsListModel>(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text('My Shop'),
@@ -61,9 +63,13 @@ class ProductsScreenState extends State<ProductsScreen> {
         ],
       ),
       drawer: const AppDrawer(),
-      body: ProductGrid(
-        filter: filter,
-      ),
+      body: productsListModel.isLoading ? 
+        const Center(
+          child: CircularProgressIndicator(),
+        ) :
+        ProductGrid(
+          filter: filter,
+        ),
     );
   }
 }

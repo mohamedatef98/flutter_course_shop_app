@@ -5,15 +5,25 @@ import 'package:project_4/widgets/app_drawer.dart';
 import 'package:project_4/widgets/cart_item.dart';
 import 'package:provider/provider.dart';
 
-class CartScreen extends StatelessWidget {
+class CartScreen extends StatefulWidget {
   static const routeName = '/cart';
   const CartScreen({super.key});
+
+  @override
+  createState() => CartScreenState();
+}
+
+class CartScreenState extends State<CartScreen> {
+  bool isLoading = false;
+
 
   @override
   Widget build(BuildContext context) {
     final cartModel = Provider.of<CartModel>(context);
     final ordersModel = Provider.of<OrdersModel>(context, listen: false);
     final products = cartModel.products;
+    final disableOrderNow = (cartModel.products.isEmpty || isLoading == true);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Cart'),
@@ -41,15 +51,25 @@ class CartScreen extends StatelessWidget {
                       '\$${cartModel.totalAmount.toStringAsFixed(2)}'
                     ),
                   ),
-                  TextButton(
-                    onPressed: () {
-                      ordersModel.addOrder(cartModel.products, cartModel.totalAmount);
-                      cartModel.clear();
+                  isLoading ? const CircularProgressIndicator() : TextButton(
+                    onPressed: disableOrderNow ? null : () async {
+                      setState(() {
+                        isLoading = true;
+                      });
+                      try {
+                        await ordersModel.addOrder(cartModel.products, cartModel.totalAmount).then((value) => cartModel.clear());
+                      }
+                      finally {
+                        setState(() {
+                          isLoading = false;
+                        });
+                      }
                     },
                     style: ButtonStyle(
                       foregroundColor: MaterialStateProperty.all(Theme.of(context).primaryColor),
                     ),
-                    child: const Text('ORDER NOW!')
+                    child: const Text('ORDER NOW!'),
+                    
                   )
                 ],
               ),

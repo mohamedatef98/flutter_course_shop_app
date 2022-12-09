@@ -18,10 +18,14 @@ class OrdersScreen extends StatelessWidget {
         title: const Text('Orders'),
       ),
       drawer: const AppDrawer(),
-      body: ListView.builder(
-        itemCount: orders.length,
-        itemBuilder: (context, index) => OrderItem(orderItem: orders[index]),
-      ),
+      body: ordersModel.isLoading ? 
+        const Center(
+          child: CircularProgressIndicator(),
+        ) :
+        ListView.builder(
+          itemCount: orders.length,
+          itemBuilder: (context, index) => OrderItem(orderItem: orders[index]),
+        ),
     );
   }
 }

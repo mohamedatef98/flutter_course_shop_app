@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:project_4/helpers/env.dart';
 import 'package:project_4/models/cart_item.dart';
+import 'package:project_4/provided-models/auth.dart';
 import '../helpers/http.dart' as http;
 
 class OrderItem {
@@ -20,6 +21,7 @@ class OrderItem {
 class OrdersModel extends ChangeNotifier {
   final List<OrderItem> _orders = [];
   bool _isLoading = false;
+  AuthModel? _authModel;
 
 
   get isLoading => _isLoading;
@@ -36,14 +38,17 @@ class OrdersModel extends ChangeNotifier {
   }
 
 
-  OrdersModel() {
-    loadOrders();
+  OrdersModel(AuthModel? authModel) {
+    _authModel = authModel;
+    if((authModel != null) && (authModel.isAuthenticated() == true)) {
+      loadOrders(); 
+    }
   }
 
   Future<void> loadOrders() async {
     _setLoading();
     try {
-      final response = await http.get(ordersUri);
+      final response = await http.get(userOrdersUri(_authModel!.getToken(), _authModel!.getUserId()));
       final ordersMap = response;
       _orders.clear();
       for(final orderEntry in ordersMap.entries) {
@@ -73,10 +78,11 @@ class OrdersModel extends ChangeNotifier {
     final orderFields = {
       'amount': total,
       'products': cartProducts.map((cartItem) => cartItem.getCartItemMap(),).toList(),
-      'time': now.toIso8601String()
+      'time': now.toIso8601String(),
+      'creatorUserId': _authModel!.getUserId()
     };
     return http.post(
-      ordersUri,
+      addOrderUri(_authModel!.getToken()),
       orderFields
     ).then((response) {
       _orders.insert(0, OrderItem(

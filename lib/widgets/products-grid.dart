@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:project_4/models/filters.dart';
+import 'package:project_4/provided-models/favorite_products.dart';
 import 'package:project_4/provided-models/product.dart';
 import 'package:project_4/provided-models/products-list.dart';
 import 'package:project_4/widgets/product_item.dart';
@@ -14,17 +15,17 @@ class ProductGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ProductsListModel>(
-      builder: (context, productsListModel, child) {
+    return Consumer2<ProductsListModel, FavoriteProductsModel>(
+      builder: (context, productsListModel, favoriteProductsModel, child) {
         final products = filter == Filters.favorites ?
-          productsListModel.favoriteItems :
+          favoriteProductsModel.filterFavoriteProducts(productsListModel.allItems) :
           productsListModel.allItems;
 
         return GridView.builder(
           padding: const EdgeInsets.all(10),
           itemCount: products.length,
           itemBuilder: (context, index) {
-            return ChangeNotifierProvider<Product>.value(
+            return Provider.value(
               value: products[index],
               child: const ProductItem(),
             );

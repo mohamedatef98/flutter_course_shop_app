@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:project_4/provided-models/cart.dart';
+import 'package:project_4/provided-models/favorite_products.dart';
 import 'package:project_4/provided-models/product.dart';
 import 'package:project_4/screens/product_details.dart';
 import 'package:provider/provider.dart';
@@ -18,10 +19,13 @@ class ProductItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cartModel = Provider.of<CartModel>(context, listen: false);
+    final favoriteProductsModel = Provider.of<FavoriteProductsModel>(context);
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
       child:  Consumer<Product>(
         builder: (context, product, child) {
+          final isFavoriteProduct = favoriteProductsModel.isFavoriteProduct(product.id);
+
           return GridTile(
             header: Container(
               color: const Color.fromARGB(206, 0, 0, 0),
@@ -38,11 +42,13 @@ class ProductItem extends StatelessWidget {
             footer: GridTileBar(
               backgroundColor: const Color.fromARGB(206, 0, 0, 0),
               leading: IconButton(
-                icon: Icon(product.isFavorite ? Icons.favorite : Icons.favorite_border),
+                icon: Icon(isFavoriteProduct ? Icons.favorite : Icons.favorite_border),
                 color: Theme.of(context).colorScheme.secondary,
                 onPressed: () {
-                  product.toggleFavorite()
-                    .catchError((_) => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Error while setting favorite'))));
+                  (isFavoriteProduct ?
+                    favoriteProductsModel.removeFavoriteProduct(product.id) :
+                    favoriteProductsModel.addFavoriteProduct(product.id)
+                  ).catchError((_) => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Error while setting favorite'))));
                 },
               ),
               title: Text(

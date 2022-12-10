@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:project_4/provided-models/auth.dart';
 import 'package:project_4/provided-models/cart.dart';
+import 'package:project_4/provided-models/favorite_products.dart';
 import 'package:project_4/provided-models/orders.dart';
 import 'package:project_4/provided-models/products-list.dart';
+import 'package:project_4/screens/auth-screen.dart';
 import 'package:project_4/screens/cart.dart';
 import 'package:project_4/screens/orders.dart';
-import 'package:project_4/screens/product_form.dart';
 import 'package:project_4/screens/products.dart';
 import 'package:project_4/screens/user_products.dart';
 import 'package:provider/provider.dart';
@@ -20,15 +22,24 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider<ProductsListModel>(
-          create: (_) => ProductsListModel(),
+        ChangeNotifierProvider<AuthModel>(
+          create: (_) => AuthModel()
+        ),
+        ChangeNotifierProxyProvider<AuthModel, ProductsListModel>(
+          create: (_) => ProductsListModel(null),
+          update: (_, authModel, __) => ProductsListModel(authModel),
         ),
         ChangeNotifierProvider<CartModel>(
           create: (_) => CartModel(),
         ),
-        ChangeNotifierProvider<OrdersModel>(
-          create: (_) => OrdersModel()
-        )
+        ChangeNotifierProxyProvider<AuthModel, OrdersModel>(
+          create: (_) => OrdersModel(null),
+          update: (_, authModel, __) => OrdersModel(authModel),
+        ),
+        ChangeNotifierProxyProvider<AuthModel, FavoriteProductsModel>(
+          create: (_) => FavoriteProductsModel(null),
+          update: (_, authModel, __) => FavoriteProductsModel(authModel),
+        ),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -44,8 +55,11 @@ class MyApp extends StatelessWidget {
             color: Colors.purple
           )
         ),
-        home: const ProductsScreen(),
+        home: Consumer<AuthModel>(
+          builder: (_, authModel, __) => authModel.isAuthenticated() ? const ProductsScreen() : const AuthScreen(),
+        ),
         routes: {
+          AuthScreen.routeName: (context) => const AuthScreen(),
           CartScreen.routeName: (context) => const CartScreen(),
           OrdersScreen.routeName: (context) => const OrdersScreen(),
           UserProductsScreen.routeName: (context) => const UserProductsScreen(),

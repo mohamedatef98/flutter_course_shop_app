@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:project_4/helpers/http_error_response_exception.dart';
 
 Future<Map<String, dynamic>> get(Uri uri) {
   return http.get(
@@ -9,11 +10,17 @@ Future<Map<String, dynamic>> get(Uri uri) {
       'Content-Type': 'application/json'
     }
   ).then((response) {
-    if (response.statusCode >= 400) {
-      throw Exception('Status code is ${response.statusCode}');
+    var decodedResponse;
+    if (response.body == 'null') {
+      decodedResponse = <String, dynamic>{};
     }
-    if (response.body == 'null') return {};
-    return jsonDecode(response.body);
+    else {
+      decodedResponse = jsonDecode(response.body);
+    }
+    if (response.statusCode >= 400) {
+      throw HttpErrorResponseException(decodedResponse);
+    }
+    return decodedResponse;
   });
 }
 
@@ -24,14 +31,21 @@ Future<Map<String, dynamic>> delete(Uri uri) {
       'Content-Type': 'application/json'
     }
   ).then((response) {
-    if (response.statusCode >= 400) {
-      throw Exception('Status code is ${response.statusCode}');
+    var decodedResponse;
+    if (response.body == 'null') {
+      decodedResponse = <String, dynamic>{};
     }
-    return {};
+    else {
+      decodedResponse = jsonDecode(response.body);
+    }
+    if (response.statusCode >= 400) {
+      throw HttpErrorResponseException(decodedResponse);
+    }
+    return decodedResponse;
   });
 }
 
-Future<Map<String, dynamic>> post(Uri uri, Map<String, dynamic> body) {
+Future<Map<String, dynamic>> post(Uri uri, dynamic body) {
   return http.post(
     uri,
     body: jsonEncode(body),
@@ -39,14 +53,21 @@ Future<Map<String, dynamic>> post(Uri uri, Map<String, dynamic> body) {
       'Content-Type': 'application/json'
     }
   ).then((response) {
-    if (response.statusCode >= 400) {
-      throw Exception('Status code is ${response.statusCode}');
+    var decodedResponse;
+    if (response.body == 'null') {
+      decodedResponse = <String, dynamic>{};
     }
-    return jsonDecode(response.body);
+    else {
+      decodedResponse = jsonDecode(response.body);
+    }
+    if (response.statusCode >= 400) {
+      throw HttpErrorResponseException(decodedResponse);
+    }
+    return decodedResponse;
   });
 }
 
-Future<Map<String, dynamic>> patch(Uri uri, Map<String, dynamic> body) {
+Future<Map<String, dynamic>> patch(Uri uri, dynamic body) {
   return http.patch(
     uri,
     body: jsonEncode(body),
@@ -54,9 +75,16 @@ Future<Map<String, dynamic>> patch(Uri uri, Map<String, dynamic> body) {
       'Content-Type': 'application/json'
     }
   ).then((response) {
-    if (response.statusCode >= 400) {
-      throw Exception('Status code is ${response.statusCode}');
+    var decodedResponse;
+    if (response.body == 'null') {
+      decodedResponse = <String, dynamic>{};
     }
-    return jsonDecode(response.body);
+    else {
+      decodedResponse = jsonDecode(response.body);
+    }
+    if (response.statusCode >= 400) {
+      throw HttpErrorResponseException(decodedResponse);
+    }
+    return decodedResponse;
   });
 }

@@ -14,7 +14,7 @@ class UserProductsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final productsModel = Provider.of<ProductsListModel>(context);
-    final products = productsModel.allItems;
+    final products = productsModel.userItems;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Your Products'),
@@ -35,7 +35,7 @@ class UserProductsScreen extends StatelessWidget {
       ),
       drawer: const AppDrawer(),
       body: RefreshIndicator(
-        onRefresh: productsModel.loadProducts,
+        onRefresh: productsModel.loadUserProducts,
         child: Padding(
           padding: const EdgeInsets.all(8),
           child: ListView.builder(

@@ -1,40 +1,60 @@
-import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:project_4/helpers/env.dart';
+import 'package:project_4/provided-models/auth.dart';
 import 'package:project_4/provided-models/product.dart';
 import '../helpers/http.dart' as http;
 
 class ProductsListModel extends ChangeNotifier {
   final List<Product> _items = [];
 
-  bool _isLoading = false;
+  final List<String> _userProductIds = [];
 
-  ProductsListModel(): super() {
-    loadProducts();
+  bool _isLoadingAllProducts = false;
+
+  bool _isLoadingUserProducts = false;
+
+  AuthModel? _authModel;
+
+  ProductsListModel(AuthModel? authModel): super() {
+    _authModel = authModel;
+    if ((authModel != null) && (authModel.isAuthenticated() == true)) {
+      loadAllProducts();
+      loadUserProducts();
+    }
   }
 
   List<Product> get allItems => [..._items];
 
-  get favoriteItems => [..._items.where((item) => item.isFavorite == true)];
+  List<Product> get userItems => [..._userProductIds.map((userProductId) => _items.firstWhere((product) => product.id == userProductId))];
 
-  get isLoading => _isLoading;
+  get isLoadingAllProducts => _isLoadingAllProducts;
+
+  get isLoadingUserProducts => _isLoadingUserProducts;
   
-  void _setLoading() {
-    _isLoading = true;
+  void _setLoadingAllProducts() {
+    _isLoadingAllProducts = true;
     notifyListeners();
   }
 
-  void _clearLoading() {
-    _isLoading = false;
+  void _clearLoadingAllProducts() {
+    _isLoadingAllProducts = false;
     notifyListeners();
   }
 
+  void _setLoadingUserProducts() {
+    _isLoadingUserProducts = true;
+    notifyListeners();
+  }
 
+  void _clearLoadingUserProducts() {
+    _isLoadingUserProducts = false;
+    notifyListeners();
+  }
 
-  Future<void> loadProducts() async {
-    _setLoading();
+  Future<void> loadAllProducts() async {
+    _setLoadingAllProducts();
     try {
-      final response = await http.get(productsUri);
+      final response = await http.get(allProductsUri(_authModel!.getToken()));
       final productsMap = response;
       _items.clear();
       for(final productEntry in productsMap.entries) {
@@ -50,22 +70,40 @@ class ProductsListModel extends ChangeNotifier {
           title: productFields['title']!,
           description: productFields['description']!,
           price: double.parse(productFields['price']!),
-          imageUrl: productFields['imageUrl']!
+          imageUrl: productFields['imageUrl']!,
         ));
       }
       notifyListeners();
     }
     finally {
-      _clearLoading();
+      _clearLoadingAllProducts();
+    }
+  }
+
+  Future<void> loadUserProducts() async {
+    _setLoadingUserProducts();
+    try {
+      final response = await http.get(userProductsUri(_authModel!.getToken(), _authModel!.getUserId()));
+      final productsMap = response;
+      _userProductIds.clear();
+      for(final productEntry in productsMap.entries) {
+        final productId = productEntry.key;
+
+        _userProductIds.add(productId);
+      }
+      notifyListeners();
+    }
+    finally {
+      _clearLoadingUserProducts();
     }
   }
 
   Future<void> addProductFromProductForm(Map<String, String> productFields) {
     return http.post(
-      productsUri,
+      getAddproductUri(_authModel!.getToken()),
       {
         ...productFields,
-        'isFavorite': false
+        'creatorUserId': _authModel!.getUserId()
       },
     ).then((response) {
       final String? id = (response)['name'] as String?;
@@ -80,8 +118,9 @@ class ProductsListModel extends ChangeNotifier {
         title: productFields['title']!,
         description: productFields['description']!,
         price: double.parse(productFields['price']!),
-        imageUrl: productFields['imageUrl']!
+        imageUrl: productFields['imageUrl']!,
       ));
+      _userProductIds.add(id);
       notifyListeners();
     });
   }
@@ -93,7 +132,7 @@ class ProductsListModel extends ChangeNotifier {
     assert(productFields['imageUrl'] != null);
 
     return http.patch(
-      getProductUri(productId),
+      getProductUri(productId, _authModel!.getToken()),
       productFields,
     ).then((response) {
       final newProductFields = response;
@@ -101,15 +140,12 @@ class ProductsListModel extends ChangeNotifier {
       final productIndex = _items.indexWhere((product) => product.id == productId);
       assert(productIndex != -1);
 
-      final oldProduct = _items[productIndex];
-      oldProduct.dispose();
       _items[productIndex] = Product(
         id: DateTime.now().toString(),
         title: newProductFields['title']!,
         description: newProductFields['description']!,
         price: double.parse(newProductFields['price']!),
         imageUrl: newProductFields['imageUrl']!,
-        isFavorite: oldProduct.isFavorite
       );
       notifyListeners();
     });
@@ -117,13 +153,12 @@ class ProductsListModel extends ChangeNotifier {
   
   Future<void> removeProduct(String productId) {
     return http.delete(
-      getProductUri(productId),
+      getProductUri(productId, _authModel!.getToken()),
     ).then((value) {
       final productIndex = _items.indexWhere((product) => product.id == productId);
       assert(productIndex != -1);
 
       final oldProduct = _items[productIndex];
-      oldProduct.dispose();
       _items.remove(oldProduct);
       notifyListeners();
     });

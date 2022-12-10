@@ -63,7 +63,7 @@ class ProductsScreenState extends State<ProductsScreen> {
         ],
       ),
       drawer: const AppDrawer(),
-      body: productsListModel.isLoading ? 
+      body: productsListModel.isLoadingAllProducts ? 
         const Center(
           child: CircularProgressIndicator(),
         ) :

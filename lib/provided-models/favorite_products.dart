@@ -42,7 +42,7 @@ class FavoriteProductsModel extends ChangeNotifier {
         productId
       );
 
-      _favoriteProducts[productId] = response[0]["name"];
+      _favoriteProducts[productId] = response["name"];
     }
     catch(error) {
       _favoriteProducts.remove(productId);

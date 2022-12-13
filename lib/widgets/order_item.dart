@@ -15,9 +15,26 @@ class OrderItem extends StatefulWidget {
   createState() => OrderItemState();
 }
 
-class OrderItemState extends State<OrderItem> {
+class OrderItemState extends State<OrderItem> with SingleTickerProviderStateMixin {
   static final dateFormatter = DateFormat('dd/MM/yyyy hh:mm');
   bool expanded = false;
+
+  late AnimationController _controller;
+  late Animation <double> _expandableContainerHeight;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 100));
+    _expandableContainerHeight = Tween<double>(begin: 0, end: 50)
+      .animate(CurvedAnimation(parent: _controller, curve: Curves.linear));
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _controller.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,15 +49,25 @@ class OrderItemState extends State<OrderItem> {
               onPressed: () {
                 setState(() {
                   expanded = !expanded;
+                  if(expanded) {
+                    _controller.forward();
+                  }
+                  else {
+                    _controller.reverse();
+                  }
                 });
               },
               icon: Icon(expanded ? Icons.expand_less : Icons.expand_more),
             ),
           ),
-          if(expanded) Container(
-            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 4),
-            constraints: const BoxConstraints(maxHeight: 180),
-            height: widget.orderItem.products.length * 25,
+          AnimatedBuilder(
+            animation: _expandableContainerHeight,
+            builder: (context, child) => Container(
+              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 4),
+              constraints: const BoxConstraints(maxHeight: 180),
+              height: _expandableContainerHeight.value,
+              child: child
+            ),
             child: ListView.builder(
               itemCount: widget.orderItem.products.length,
               itemBuilder: (context, index) {

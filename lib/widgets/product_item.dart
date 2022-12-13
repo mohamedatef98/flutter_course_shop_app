@@ -75,11 +75,14 @@ class ProductItem extends StatelessWidget {
             ),
             child: GestureDetector(
               onTap: () => handleProductTap(context, product),
-              child: FadeInImage(
-                placeholder: const AssetImage(waitingImage),
-                image: NetworkImage(product.imageUrl),
-                fit: BoxFit.cover,
-              ),
+              child: Hero(
+                tag: product.id,
+                child: FadeInImage(
+                  placeholder: const AssetImage(waitingImage),
+                  image: NetworkImage(product.imageUrl),
+                  fit: BoxFit.cover,
+                ),
+              )
               
             )
           );

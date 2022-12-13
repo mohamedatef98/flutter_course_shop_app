@@ -6,6 +6,8 @@ import 'package:project_4/screens/product_details.dart';
 import 'package:provider/provider.dart';
 
 class ProductItem extends StatelessWidget {
+
+  static const waitingImage = 'assets/images/product-placeholder.png';
   const ProductItem({
     super.key
   });
@@ -73,10 +75,12 @@ class ProductItem extends StatelessWidget {
             ),
             child: GestureDetector(
               onTap: () => handleProductTap(context, product),
-              child: Image.network(
-                product.imageUrl,
+              child: FadeInImage(
+                placeholder: const AssetImage(waitingImage),
+                image: NetworkImage(product.imageUrl),
                 fit: BoxFit.cover,
               ),
+              
             )
           );
         },
